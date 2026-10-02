@@ -1,12 +1,11 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 
 public class Graphs
 {
     private List<Edge> edges = new List<Edge>();
     private List<Nodes> nodes = new List<Nodes>();
-    private List<Nodes> pathList = new List<Nodes>();
+    public List<Nodes> pathList = new List<Nodes>();
 
     public Graphs()
     {
@@ -44,6 +43,16 @@ public class Graphs
 
     public bool AStar(GameObject startId, GameObject endId)
     {
+        pathList.Clear();
+
+        foreach (Nodes node in nodes)
+        {
+            node.cameFrom = null;
+            node.f = 0;
+            node.g = 0;
+            node.h = 0;
+        }
+
         Nodes start = FindNode(startId);
         Nodes end = FindNode(endId);
 
@@ -106,14 +115,20 @@ public class Graphs
     public void ReconstructPath(Nodes startId, Nodes endId)
     {
         pathList.Clear();
-        pathList.Add(endId);
 
-        var p = endId.cameFrom;
-        while (p != startId && p == null)
+        Nodes current = endId;
+        while (current != startId && current != null)
         {
-            pathList.Insert(0, p);
-            p = p.cameFrom;
+            pathList.Insert(0, current);
+            current = current.cameFrom;
         }
+
+        if (current == null)
+        {
+            pathList.Clear();
+            return;
+        }
+
         pathList.Insert(0, startId);
     }
 
@@ -125,7 +140,7 @@ public class Graphs
     private int LowestF(List<Nodes> l)
     {
         float lowestf = 0;
-        int count = 0,  iteratorCount = 0;
+        int iteratorCount = 0;
 
         lowestf = l[0].f;
 
@@ -134,9 +149,8 @@ public class Graphs
             if (l[i].f < lowestf)
             {
                 lowestf = l[i].f;
-                iteratorCount = count;
+                iteratorCount = i;
             }
-            count++;
         }
         return iteratorCount;
     }

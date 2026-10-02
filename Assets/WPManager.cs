@@ -11,8 +11,8 @@ public struct Link
 
 public class WPManager : MonoBehaviour
 {
-    [SerializeField] GameObject[] wayPoints;
-    [SerializeField] Link[] Links;
+    public GameObject[] wayPoints;
+    public Link[] Links;
     public Graphs graph = new Graphs();
 
     private void Start()
